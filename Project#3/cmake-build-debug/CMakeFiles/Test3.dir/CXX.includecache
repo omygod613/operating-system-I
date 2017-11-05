@@ -1,0 +1,40 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/Users/eason/Documents/OSU/2017_Fall_Term/CS550/Project3/Test3/bmptotexture.cpp
+stdio.h
+-
+
+/Users/eason/Documents/OSU/2017_Fall_Term/CS550/Project3/Test3/sample.cpp
+stdio.h
+-
+stdlib.h
+-
+ctype.h
+-
+math.h
+-
+bmptotexture.cpp
+/Users/eason/Documents/OSU/2017_Fall_Term/CS550/Project3/Test3/bmptotexture.cpp
+windows.h
+-
+GL/glew.h
+-
+OpenGL/gl.h
+-
+OpenGL/glu.h
+-
+GLUT/glut.h
+-
+GL/gl.h
+-
+GL/glu.h
+-
+GL/glut.h
+-
+

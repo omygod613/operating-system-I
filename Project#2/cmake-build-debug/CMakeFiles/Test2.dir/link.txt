@@ -1,0 +1,1 @@
+/Library/Developer/CommandLineTools/usr/bin/c++   -std=c++11 -g -Wl,-search_paths_first -Wl,-headerpad_max_install_names  CMakeFiles/Test2.dir/sample.cpp.o  -o Test2 -framework OpenGL -framework GLUT -framework Cocoa 
