@@ -1,0 +1,104 @@
+#! /bin/bash
+#print error usage info to stderr
+usage () {
+	echo " $0 {-rows|-cols} [file]" 1>&2
+	exit 1
+}
+
+#if the number of arguments are over 2, then print error usage info to stderr
+if [[ $# > 2 ]]; then
+	usage
+	exit 1
+fi
+
+#-z check whether the $2 is empty string
+#-r check whether the file is readable
+#if not, return stderr 
+if [[ ! -z $2 && ! -r $2 ]]; then
+	echo "$0: cannot read $2" 1>&2
+	exit 1
+fi
+
+#function for calculating row string
+if [[ $1 =~ ^-r ]]; then
+	echo -e "Average\tMedian"
+	
+	while read line
+	do
+		# sort each string
+		sorted_row_line=$(echo "$line" | tr '\t' ' ' | tr ' ' '\n' | sort -n | tr '\n' ' ')
+		# store each string to array
+		row_line_array=($sorted_row_line)
+		# sum each string
+		row_line_sum=$(echo $sorted_row_line | sed 's\ \ + \g') 
+		# calculate middle index 
+		row_center_index=$(expr ${#row_line_array[@]} / 2)
+		numerator_correction=$(expr \( ${#row_line_array[@]} \) / 2 )		
+		# find the row median
+		row_median=${row_line_array[$row_center_index]}
+		# calculate the row average
+		row_average=$(expr \( $row_line_sum + $numerator_correction \) / ${#row_line_array[@]} )
+		echo -e "$row_average\t$row_median"
+
+
+	done < "${2:-/dev/stdin}"
+
+#function for calculating column string
+elif [[ $1 =~ ^-c ]]; then
+
+	#input each line to temp file
+	file=""
+	while read line 
+	do
+		file+=$line
+		file+=$'\n'
+	done < "${2:-/dev/stdin}"
+	
+	#in order to transform column to row, the file should be count each column
+	first_line_array=($(echo "%s\n" "$file" | head -1))
+	first_line_length=$((${#first_line_array[@]}-1))	
+	
+	averages=()
+	means=()
+	
+	#if file is empty, return to stderr
+	if [[ $first_line_length == 0 ]]; then
+		echo Averages:
+		printf "\n"
+		echo Medians:
+		printf "\n"
+		exit 0
+	fi
+	
+	for index in $(seq 1 $first_line_length)
+	do
+		#transform each column line to row line
+		sorted_column_line=$(printf "%s\n" "$file" | cut -f $index | sort -n | tr '\n' ' ')
+		# store every line to the array
+		column_line_array=($sorted_column_line)
+		# find middle index
+		column_median_index=$(expr ${#column_line_array[@]}  / 2)
+		# calculate the sum of each line
+		column_line_sum=$(echo $sorted_column_line | sed 's/ / + /g')
+		numerator_correction=$(expr \( ${#column_line_array[@]} \) / 2 )
+		# calculate the average of each line
+		column_average=$(expr \( $column_line_sum + $numerator_correction \) / ${#column_line_array[@]} )
+		# find median
+		column_median=${column_line_array[$column_median_index]}
+		#print the lines to the arrays
+		averages+=($column_average)
+		means+=($column_median)
+	done
+	
+	
+	echo Averages:
+	printf "%s\t" ${averages[@]}
+	printf "\n"
+	echo Medians:
+	printf "%s\t" ${means[@]}
+	printf "\n"
+
+else
+	usage
+	exit 1
+fi
